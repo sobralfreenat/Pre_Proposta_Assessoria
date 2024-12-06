@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Lead - Assessoria Consultiva Estratégica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .component {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+        input[type="text"], input[type="email"], input[type="tel"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Assessoria Consultiva Estratégica: Estrutura e Ofertas</h1>
+    <p>Transformando os Serviços Limitantes em Produto Escalável. Esta proposta de parceria estratégica digital visa transformar a maneira como oferecemos consultoria e mentoria, migrando para um modelo de assessoria mais eficiente, escalável e com crescimento recorrente.</p>
+
+    <h2>Cadastro de Lead</h2>
+    <form id="leadForm">
+        <label for="name">Nome da Pessoa:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="empresa">Nome da Empresa:</label>
+        <input type="text" id="empresa" name="empresa" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="celular">Contato Celular:</label>
+        <input type="tel" id="celular" name="celular" required>
+
+        <h3>Objetivos da Assessoria</h3>
+        <p>Identificação clara dos problemas e oportunidades, desenvolvimento de soluções adaptadas às necessidades específicas da empresa e suporte constante para garantir a eficácia das estratégias implementadas.</p>
+
+        <h3>Componentes da Assessoria</h3>
+        <div class="component">
+            <label>
+                <input type="checkbox" id="selectAll" onclick="toggleSelectAll()"> Selecionar Todos
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="sessao_analise"> Sessão de Análise de Cenário
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="video_orientacao"> Vídeo de Orientação/Instrucional (10 min)
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="menu_insights"> Menu Digital Estruturado com Insights de Orientação
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="menu_insights_video"> Menu Digital Estruturado com Insights + Vídeo(s)
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="aprendizado_estruturado"> Aprendizado Estruturado (Videoaulas/Cursos)
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="acompanhamento_estrategico"> Assessoria Consultiva com Acompanhamento Estratégico
+            </label>
+            <label>
+                <input type="checkbox" name="components" value="acesso_material"> Assessoria Consultiva + Acesso 24/7 a Material de Apoio
+            </label>
+        </div>
+
+        <button type="button" onclick="saveLead()">Salvar Cadastro como JSON</button>
+        <input type="file" id="fileInput" accept=".json" onchange="loadJSON(event)">
+        <button type="button" onclick="document.getElementById('fileInput').click()">Carregar JSON</button>
+    </form>
+
+    <script>
+        function saveLead() {
+            const name = document.getElementById('name').value;
+            const empresa = document.getElementById('empresa').value;
+            const email = document.getElementById('email').value;
+            const celular = document.getElementById('celular').value;
+            const components = Array.from(document.querySelectorAll('input[name="components"]:checked')).map(el => el.value);
+            const quantidadeSelecoes = components.length;
+
+            const leadData = {
+                nome: name,
+                empresa: empresa,
+                email: email,
+                celular: celular,
+                numero_de_selecoes: quantidadeSelecoes,
+                components: components
+            };
+
+            const jsonString = JSON.stringify(leadData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}_${empresa}_${quantidadeSelecoes}_cadastro.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadJSON(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = JSON.parse(e.target.result);
+                document.getElementById('name').value = data.nome || '';
+                document.getElementById('empresa').value = data.empresa || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('celular').value = data.celular || '';
+                data.components.forEach(component => {
+                    const checkbox = document.querySelector(`input[name="components"][value="${component}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            };
+            reader.readAsText(file);
+        }
+
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('input[name="components"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+    </script>
+</body>
+</html>
